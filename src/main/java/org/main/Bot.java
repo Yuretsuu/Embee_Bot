@@ -1,51 +1,60 @@
 package org.main;
-import discord4j.common.util.Snowflake;
-import discord4j.core.DiscordClient;
-import discord4j.core.DiscordClientBuilder;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.entity.channel.TextChannel;
-import reactor.core.publisher.Mono;
 
+import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.discordjson.json.ApplicationCommandRequest;
 
 public class Bot {
-
+    static long guildId = 1096316870761648209L;
     public static void main(String[] args) {
-        GatewayDiscordClient client = DiscordClientBuilder.create("MTA5MjY3ODE2MzE3NzQyMjg0OA.GT_PO9.0pJLNIXAH97JPevIO-c0Cf8t55ee4brPKBuNd8")
-                .build()
-                .login()
-                .block();
+
+        GatewayDiscordClient client = Gateway.connect();
+
+        ApplicationCmd applicationCmd = new ApplicationCmd(client);
+        ApplicationCommandRequest greetCmdRequest = applicationCmd.createCommand();
+
+        Gateway.connect();
+
+        System.out.println("Connected");
+
+        client.getRestClient().getApplicationService()
+                .createGuildApplicationCommand(applicationCmd.getApplicationId(), guildId, greetCmdRequest)
+                .subscribe();
+
+        System.out.println("Succeeded.");
 //
-//        client.getEventDispatcher().on(ReadyEvent.class)
-//                .subscribe(event -> {
-//                    User self = event.getSelf();
-//                    System.out.println(String.format("Logged in as %s#%s", self.getUsername(), self.getDiscriminator()));
-//                });
+//        client.getEventDispatcher().on(MessageCreateEvent.class)
+//                .map(MessageCreateEvent::getMessage)
+//                .filter(message -> message.getContent().equalsIgnoreCase("/greet"))
+//                .flatMap(message -> {
+//                    String name = ""; // Extract the name from the message content if needed
+//                    String content = message.getContent();
+//                    if (content.startsWith("/greet --name")) {
+//                        String[] parts = content.split("\\s+");
+//                        if (parts.length >= 3) {
+//                            name = parts[2];
+//                        }
+//                    }
+//                    String response = "Hello, " + name + "! Nice to meet you."; // Customize the greeting message
+//                    return message.getChannel()
+//                            .flatMap(channel -> channel.createMessage(response))
+//                            .doOnSuccess(sentMessage -> System.out.println("Message sent: " + sentMessage.getContent()));
+//                })
+//                .subscribe();
 
-        try {
-            assert client != null;
-            client.getEventDispatcher().on(MessageCreateEvent.class)
-                    .map(MessageCreateEvent::getMessage)
-//                    .filter(message -> message.getAuthor().map(user -> !user.isBot()).orElse(false))
-                    .filter(message -> {
-                        String content = message.getContent();
-                        System.out.println("Received message: " + content);
-                        return content.equalsIgnoreCase("!ping");
-                    })
-                    .flatMap(Message::getChannel)
-                    .flatMap(channel -> channel.createMessage("Pong!"))
-                    .subscribe();
+        client.on(ChatInputInteractionEvent.class, event ->
+        {
+            var a = event.getOption("name").get().getValue();
+            String name;
 
-            client.onDisconnect().block();
+            if (a.isEmpty())
+                name = "empty";
+            else
+                name = a.get().asString();
 
-        } catch (Throwable t) {
-            System.err.println("Error during message handling: " + t.getMessage());
-            t.printStackTrace();
-        }
+            return event.reply("Hello, " + name + "!");
+        }).subscribe();
 
+        client.onDisconnect().block();
     }
 }
