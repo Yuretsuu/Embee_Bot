@@ -42,6 +42,8 @@ public class Bot {
 //                })
 //                .subscribe();
 
+        // Francisco
+
         client.on(ChatInputInteractionEvent.class, event ->
         {
             var a = event.getOption("name").get().getValue();
