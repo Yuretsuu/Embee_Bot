@@ -9,7 +9,6 @@ public class ApplicationCmd {
     //Member variables
 
     long guildId = 1096316870761648209L;
-    long applicationId = Gateway.client.getRestClient().getApplicationId().block();
 
     private final GatewayDiscordClient client;
 
