@@ -4,6 +4,7 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 
 public class Gateway {
+    // Random ass comment here
     static GatewayDiscordClient client;
 
     public static GatewayDiscordClient connect(){
