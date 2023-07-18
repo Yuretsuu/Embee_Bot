@@ -7,6 +7,7 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 public class Bot {
     static long guildId = 1096316870761648209L;
     public static void main(String[] args) {
+        //Added comment
 
         GatewayDiscordClient client = Gateway.connect();
 
