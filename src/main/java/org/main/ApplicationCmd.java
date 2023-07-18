@@ -18,31 +18,34 @@ public class ApplicationCmd {
         this.client = client;
     }
 
-    public ApplicationCommandRequest createCommand(){
-    ApplicationCommandRequest greetCmdRequest = ApplicationCommandRequest.builder()
-            .name("greet")
-            .description("Greets You")
-            .addOption(ApplicationCommandOptionData.builder()
-                    .name("name")
-                    .description("Your name")
-                    .type(ApplicationCommandOption.Type.STRING.getValue())
-                    .required(true)
-                    .build()
-            ).build();
-        return greetCmdRequest;
+    public ApplicationCommandRequest createGreetCommand(){
+        return ApplicationCommandRequest.builder()
+                .name("greet")
+                .description("Greets You")
+                .addOption(ApplicationCommandOptionData.builder()
+                        .name("name")
+                        .description("Your name")
+                        .type(ApplicationCommandOption.Type.STRING.getValue())
+                        .required(true)
+                        .build()
+                ).build();
+    }
+    public ApplicationCommandRequest createMessageCommand(){
+        return ApplicationCommandRequest.builder()
+                    .name("createMessage")
+                    .description("Creates a message")
+                    .addOption(ApplicationCommandOptionData.builder()
+                            .name("message")
+                            .description("Your name")
+                            .type(ApplicationCommandOption.Type.STRING.getValue())
+                            .required(true)
+                            .build()
+                    ).build();
     }
 
-//    public void createGuildApplicationCommand(String applicationId, long guildId, ApplicationCommandRequest greetCmdRequest) {
-//        Gateway.client.getRestClient().getApplicationService()
-//                .createGuildApplicationCommand(
-//                        Long.parseLong(applicationId),
-//                        guildId,
-//                        greetCmdRequest)
-//                .subscribe();
-//    }
     //Getters
     public long getApplicationId() {
+
         return client.getSelfId().asLong();
     }
-//    Gateway.client.getRestClient().getApplicationService()
 }
