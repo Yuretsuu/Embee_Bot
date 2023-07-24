@@ -1,7 +1,6 @@
 package org.main;
 
 import discord4j.core.GatewayDiscordClient;
-import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.main.command.EmbedCmd;
 import org.main.command.GreetCmd;
 
@@ -12,16 +11,25 @@ public class Main {
         GatewayDiscordClient client = Gateway.connect();
 
         //if created command exists, don't execute. if it does, execute
-
         GreetCmd greetCmd = new GreetCmd(client);
         EmbedCmd embedCmd = new EmbedCmd(client);
+        InputAdapter adapter = new InputAdapter(client);
 
         //Switch case to execute based on user input
-        greetCmd.execute();
+//        greetCmd.execute();
+
+        switch () {
+            case "greet":
+                greetCmd.execute();
+                break;
+            case "embed":
+                embedCmd.execute();
+                break;
+        }
         embedCmd.execute();
 
 //      ApplicationCommandRequest greetCmdRequest = greetCmd.createGreetCommand();
-      ApplicationCommandRequest embedCmdRequest = embedCmd.embedCommand();
+//      ApplicationCommandRequest embedCmdRequest = embedCmd.embedCommand();
 
         System.out.println("Connected");
 
@@ -30,9 +38,9 @@ public class Main {
 //                .createGuildApplicationCommand(greetCmd.getApplicationId(), guildId, greetCmdRequest)
 //                .subscribe();
 
-        client.getRestClient().getApplicationService()
-                .createGuildApplicationCommand(embedCmd.getApplicationId(), guildId, embedCmdRequest)
-                .subscribe();
+//        client.getRestClient().getApplicationService()
+//                .createGuildApplicationCommand(embedCmd.getApplicationId(), guildId, embedCmdRequest)
+//                .subscribe();
 
 //        EmbedCreateSpec embed = EmbedCreateSpec.builder()
 //                .color(Color.PINK)

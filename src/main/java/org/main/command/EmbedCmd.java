@@ -1,58 +1,34 @@
 package org.main.command;
 
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.discordjson.json.ApplicationCommandOptionData;
-import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.Color;
+import org.main.InputAdapter;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 public class EmbedCmd implements Command {
+    //Not initializing because client is already pre-defined in @Gateway.java.
     private final GatewayDiscordClient client;
+    //Instance of EmbedFormatter is used to format the output of the command
+    private EmbedFormatter embedFormatter = new EmbedFormatter();
+
+    InputAdapter inputAdapter;
     private static long guildId = 1096316870761648209L;
 
-    //Constructor
+    /*
+    Constructor
+    EmbedCmd takes in a GatewayDiscordClient as a parameter.
+    EmbedCmd class is delegating or utilizing functionality provided by the InputAdapter class.
+    */
     public EmbedCmd(GatewayDiscordClient client) {
         this.client = client;
-    }
-
-    //Creates and registers the command in Discord
-    public ApplicationCommandRequest embedCommand(){
-        return ApplicationCommandRequest.builder()
-                .name("embed")
-                .description("Create a new embed")
-                .addOption(ApplicationCommandOptionData.builder()
-                        .name("embed")
-                        .description("Embed Details")
-                        .type(ApplicationCommandOption.Type.STRING.getValue())
-                        .required(false)
-                        .build()
-                ).build();
+        this.inputAdapter = new InputAdapter(client);
     }
     @Override
     public void execute() {
-        // Event handler for chat input interaction events
-        client.getEventDispatcher().on(ChatInputInteractionEvent.class)
-                .flatMap(event -> {
-                    // Prompt the user for input and return the response
-                    event.reply("Please enter the details of your embed.");
-
-                    // Store the user's input in a stateful variable for later processing
-                    // The state will be associated with the user's ID (author ID) to track their response
-                    Map<Long, String> userInputMap = new HashMap<>();
-
-                    client.getEventDispatcher().on(MessageCreateEvent.class);
-                    String userInput = userInputMap.get(event.getInteraction().getUser().getId().asString());
-
-
-                })
-                .subscribe(); // This ensures the entire chain is executed when the user responds
+        System.out.println("execute prompt");
+        inputAdapter.prompt();
     }
 
 

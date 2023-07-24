@@ -1,10 +1,14 @@
 package org.main.command;
 
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.util.Color;
+
+import java.time.Instant;
 
 public class EmbedFormatter {
     public static EmbedCreateSpec format(String text) {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
+        EmbedCreateSpec.Builder embedBuilder = EmbedCreateSpec.builder();
+
         String[] lines = text.split("\n");
 
         for (String line : lines) {
@@ -18,13 +22,13 @@ public class EmbedFormatter {
 
             switch (tag) {
                 case "<title>":
-                    embedBuilder.setTitle(value);
+                    embedBuilder.title(value);
                     break;
                 case "<description>":
-                    embedBuilder.setDescription(value);
+                    embedBuilder.description(value);
                     break;
                 case "<image>":
-                    embedBuilder.setImage(value);
+                    embedBuilder.image(value);
                     break;
                 // Add more cases for other tags like <author>, <field>, <footer>, etc.
                 // Handle them accordingly based on your desired format
@@ -32,6 +36,9 @@ public class EmbedFormatter {
                     break;
             }
         }
+
+        embedBuilder.color(Color.PINK);
+        embedBuilder.timestamp(Instant.now());
 
         return embedBuilder.build();
     }
