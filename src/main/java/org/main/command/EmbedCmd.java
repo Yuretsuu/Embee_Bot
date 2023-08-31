@@ -2,10 +2,8 @@ package org.main.command;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.rest.util.Color;
 import org.main.InputAdapter;
-
-import java.time.Instant;
+import org.main.objects.MessageObject;
 
 public class EmbedCmd implements Command {
     //Not initializing because client is already pre-defined in @Gateway.java.
@@ -25,6 +23,66 @@ public class EmbedCmd implements Command {
         this.client = client;
         this.inputAdapter = new InputAdapter(client);
     }
+
+    public EmbedCreateSpec generateEmbed(MessageObject input) {
+        String[] msg = input.message.getContent().split("\n");
+        int isValid = 0;
+        String title = "";
+        String description = "";
+        String ftitle = "";
+        String fvalue = "";
+        String footer = "";
+        String url = "";
+        String color = "";
+
+        for (String line : msg) {
+            if (line.startsWith("<title>")) {
+                title = line.split("<title>")[1];
+                isValid += 1;
+            }
+            if (line.startsWith("<description>") || line.startsWith("<desc>")) {
+                description = line.split("<description>")[1];
+                isValid += 1;
+            }
+            if (line.startsWith("<ftitle>")) {
+                ftitle = line.split("<ftitle>")[1];
+
+            }
+            if (line.startsWith("<fvalue>")) {
+                fvalue = line.split("<fvalue>")[1];
+
+            }
+            if (line.startsWith("<footer>")) {
+                footer = line.split("<footer>")[1];
+
+            }
+            if (line.startsWith("<url>")) {
+                url = line.split("<url>")[1];
+
+            }
+            if (line.startsWith("<color>")) {
+                color = line.split("<color>")[1];
+
+            }
+        }
+
+        if (isValid == 2) {
+            if (fvalue != null && ftitle == null) {
+                return null;
+            } else {
+                EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                        .title(title)
+                        .description(description)
+                        .build();
+
+                return embed;
+
+            }
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public void execute() {
         System.out.println("execute prompt");
@@ -36,50 +94,5 @@ public class EmbedCmd implements Command {
     public long getApplicationId() {
         return client.getSelfId().asLong();
     }
-
-    private EmbedCreateSpec createUserEmbed(String userInput) {
-        EmbedCreateSpec.Builder embedBuilder = EmbedCreateSpec.builder();
-
-        // Split the user input by new lines to process each line separately
-        String[] lines = userInput.split("\n");
-
-        // Iterate through each line of user input
-        for (String line : lines) {
-            // Check if the line contains "<title>"
-            if (line.startsWith("<title>") && line.endsWith("<title>")) {
-                // Get the title text between "<title>" tags
-                String title = line.substring("<title>".length(), line.length() - "<title>".length()).trim();
-                embedBuilder.title(title);
-            }
-            // Check if the line contains "<text>"
-            else if (line.startsWith("<text>") && line.endsWith("<text>")) {
-                // Get the text between "<text>" tags
-                String text = line.substring("<text>".length(), line.length() - "<text>".length()).trim();
-                embedBuilder.description(text);
-            }
-        }
-        embedBuilder.color(Color.PINK);
-        embedBuilder.timestamp(Instant.now());
-
-        return embedBuilder.build();
-
-//    private EmbedCreateSpec createMarinEmbed() {
-//        return EmbedCreateSpec.builder()
-//                .color(Color.PINK)
-//                .title("Title")
-//                .url("https://discord4j.com")
-//                .author("Some Name", "https://discord4j.com", "https://i.imgur.com/F9BhEoz.png")
-//                .description("a description")
-//                .thumbnail("https://i.imgur.com/F9BhEoz.png")
-//                .addField("field title", "value", false)
-//                .addField("\u200B", "\u200B", false)
-//                .addField("inline field", "value", true)
-//                .addField("inline field", "value", true)
-//                .addField("inline field", "value", true)
-//                .image("https://cdn.discordapp.com/attachments/987407171773923389/1130487094654017586/image0.jpg")
-//                .timestamp(Instant.now())
-//                .footer("footer", "https://i.imgur.com/F9BhEoz.png")
-//                .build();
-   }
 
 }

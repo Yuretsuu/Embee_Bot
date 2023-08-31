@@ -4,6 +4,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import org.main.objects.MessageObject;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -20,24 +21,31 @@ public class InputAdapter {
         this.client = client;
     }
     //Event Listener
-    public Flux<String> prompt() {
+    public Flux<MessageObject> prompt() {
         return client.on(MessageCreateEvent.class) // Listen for message create events
                 .flatMap(this::handleMessageEvent);
     }
-    private Mono<String> handleMessageEvent(MessageCreateEvent event) {
+    private Mono<MessageObject> handleMessageEvent(MessageCreateEvent event) {
         // Get the message and author information
         Message message = event.getMessage();
         String content = message.getContent();
         long authorId = message.getAuthor().map(user -> user.getId().asLong()).orElse(0L);
 
+        MessageObject msgObject = new MessageObject();
+
         // Check if the command is /embed
-        if (content.equalsIgnoreCase("!e")) {
+        if (content.contains("!e")) {
             // Get the channel ID where the command was invoked
             MessageChannel channel = message.getChannel().block();
 
-            // Prompt the user for input and store it in the map
-            return channel.createMessage("Please enter the details of your embed.")
-                    .then(getUserInput(event, authorId));
+            msgObject.type = "!e";
+            msgObject.message = message;
+
+            msgObject.channel = channel;
+            msgObject.senderID = authorId;
+
+            return Mono.just(msgObject);
+
         } else {
             // For other commands or messages, return an empty Mono
             return Mono.empty();
@@ -45,7 +53,7 @@ public class InputAdapter {
     }
 
     public Mono<String> getUserInput(MessageCreateEvent event, long authorId) {
-        System.out.println("Message received");
+        System.out.println("MessageObject received");
         return client.getEventDispatcher().on(MessageCreateEvent.class)
                 .filter(e -> e.getMessage().getAuthor().map(user -> user.getId().asLong()).orElse(0L) == authorId)
                 .next()
