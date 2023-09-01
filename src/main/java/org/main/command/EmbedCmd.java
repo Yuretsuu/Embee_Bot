@@ -2,6 +2,7 @@ package org.main.command;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.util.Color;
 import org.main.InputAdapter;
 import org.main.objects.MessageObject;
 
@@ -31,37 +32,33 @@ public class EmbedCmd implements Command {
         String description = "";
         String ftitle = "";
         String fvalue = "";
-        String footer = "";
         String url = "";
-        String color = "";
+        String msgcolor = "";
 
         for (String line : msg) {
             if (line.startsWith("<title>")) {
-                title = line.split("<title>")[1];
+                title = line.split("<title> ")[1];
                 isValid += 1;
             }
-            if (line.startsWith("<description>") || line.startsWith("<desc>")) {
-                description = line.split("<description>")[1];
+            if (line.startsWith("<desc>")) {
+                description = line.split("<desc> ")[1];
                 isValid += 1;
             }
             if (line.startsWith("<ftitle>")) {
-                ftitle = line.split("<ftitle>")[1];
+                ftitle = line.split("<ftitle> ")[1];
 
             }
             if (line.startsWith("<fvalue>")) {
-                fvalue = line.split("<fvalue>")[1];
+                fvalue = line.split("<fvalue> ")[1];
 
             }
-            if (line.startsWith("<footer>")) {
-                footer = line.split("<footer>")[1];
 
-            }
             if (line.startsWith("<url>")) {
-                url = line.split("<url>")[1];
+                url = line.split("<url> ")[1];
 
             }
             if (line.startsWith("<color>")) {
-                color = line.split("<color>")[1];
+                msgcolor = line.split("<color> ")[1];
 
             }
         }
@@ -70,9 +67,13 @@ public class EmbedCmd implements Command {
             if (fvalue != null && ftitle == null) {
                 return null;
             } else {
+
                 EmbedCreateSpec embed = EmbedCreateSpec.builder()
                         .title(title)
                         .description(description)
+                        .addField(ftitle, fvalue, false)
+                        .url(url)
+                        .color(Color.of(Integer.parseInt(msgcolor, 16)))
                         .build();
 
                 return embed;
