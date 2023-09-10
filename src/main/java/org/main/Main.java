@@ -4,24 +4,32 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import org.main.command.EmbedCmd;
-import org.main.command.GreetCmd;
 import org.main.objects.MessageObject;
 
 public class Main {
-    static long guildId = 1096316870761648209L;
+//    static long guildId = 1096316870761648209L;
     public static void main(String[] args) throws InterruptedException {
 
+        /*Connect to Discord Gateway and get the client object
+        * PERSONAL NOTES:
+        * What is a Discord Gateway?
+        * A discord gateway facilitates the flow of data
+        * between client applications and discord servers. Think of it as a bridge between the two*/
         GatewayDiscordClient client = Gateway.connect();
-
-        //if created command exists, don't execute. if it does, execute
-        GreetCmd greetCmd = new GreetCmd(client);
+        //Initialize the Embed Class, which handles the embed messages
         EmbedCmd embedCmd = new EmbedCmd(client);
+        //Initialize the InputAdapter class, which handles the user input
         InputAdapter adapter = new InputAdapter(client);
 
+        /*Subscribe to the prompt that is observed through the Input Adapter.
+        * This listens to incoming data from the user. We are LISTENING for an event (ie the input)
+        */
         adapter.prompt().subscribe(
-           data -> onNext(data, embedCmd, client),
-           error -> onError(error),
-           () -> onCompleted()
+           /*Lambda gets executed when (think of onNext as "ON NEXT RECEIVED DATA,
+            new data (ie, user input) is emitted.*/
+           data -> onNext(data, embedCmd, client), //on receiving data
+           error -> onError(error), //on error
+           () -> onCompleted() //on completion
         );
 
         System.out.println("Connected");

@@ -37,28 +37,28 @@ public class EmbedCmd implements Command {
 
         for (String line : msg) {
             if (line.startsWith("<title>")) {
-                title = line.split("<title> ")[1];
+                title = line.split("<title>")[1];
                 isValid += 1;
             }
             if (line.startsWith("<desc>")) {
-                description = line.split("<desc> ")[1];
+                description = line.split("<desc>")[1];
                 isValid += 1;
             }
             if (line.startsWith("<ftitle>")) {
-                ftitle = line.split("<ftitle> ")[1];
+                ftitle = line.split("<ftitle>")[1];
 
             }
             if (line.startsWith("<fvalue>")) {
-                fvalue = line.split("<fvalue> ")[1];
+                fvalue = line.split("<fvalue>")[1];
 
             }
 
             if (line.startsWith("<url>")) {
-                url = line.split("<url> ")[1];
+                url = line.split("<url>")[1];
 
             }
             if (line.startsWith("<color>")) {
-                msgcolor = line.split("<color> ")[1];
+                msgcolor = line.split("<color>")[1];
 
             }
         }
