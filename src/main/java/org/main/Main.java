@@ -3,6 +3,7 @@ package org.main;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 import org.main.command.EmbedCmd;
 import org.main.objects.MessageObject;
 
@@ -25,8 +26,7 @@ public class Main {
         * This listens to incoming data from the user. We are LISTENING for an event (ie the input)
         */
         adapter.prompt().subscribe(
-           /*Lambda gets executed when (think of onNext as "ON NEXT RECEIVED DATA,
-            new data (ie, user input) is emitted.*/
+           /*Lambda gets executed when new data (ie, user input) is emitted.*/
            data -> onNext(data, embedCmd, client), //on receiving data
            error -> onError(error), //on error
            () -> onCompleted() //on completion
@@ -36,13 +36,39 @@ public class Main {
 
         client.onDisconnect().block();
     }
-    private static void onNext(MessageObject data, EmbedCmd cmd, GatewayDiscordClient client) {
-        client.getChannelById(Snowflake.of(data.getChannel().getId().asLong()))
-                .ofType(GuildMessageChannel.class)
-                .flatMap(channel -> channel.createMessage(cmd.generateEmbed(data)))
-                .subscribe();
-
+//    private static void onNext(MessageObject data, EmbedCmd cmd, GatewayDiscordClient client) {
+//        client.getChannelById(Snowflake.of(data.getChannel().getId().asLong()))
+//                .ofType(GuildMessageChannel.class)
+//                .flatMap(channel -> channel.createMessage(cmd.generateEmbed(data)))
+//                .subscribe();
+//
+//    }
+private static void onNext(MessageObject data, EmbedCmd cmd, GatewayDiscordClient client) {
+    if (data == null) {
+        System.out.println("Data is null");
+        return;
     }
+
+    if (cmd == null) {
+        System.out.println("Cmd is null");
+        return;
+    }
+
+    EmbedCreateSpec embed = cmd.generateEmbed(data);
+
+    if (embed == null) {
+        System.out.println("Generated embed is null");
+        return;
+    }
+
+    client.getChannelById(Snowflake.of(data.getChannel().getId().asLong()))
+            .ofType(GuildMessageChannel.class)
+            .flatMap(channel -> {
+                return channel.createMessage(embed);
+            })
+            .subscribe();
+}
+
     private static void onError(Throwable data) {
         System.out.println(data);
     }

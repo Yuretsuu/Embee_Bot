@@ -27,62 +27,85 @@ public class EmbedCmd implements Command {
 
     public EmbedCreateSpec generateEmbed(MessageObject input) {
         String[] msg = input.message.getContent().split("\n");
-        int isValid = 0;
+
         String title = "";
         String description = "";
+        String thumbnail = "";
         String ftitle = "";
         String fvalue = "";
+        String image = "";
         String url = "";
-        String msgcolor = "";
+        String footerTxt = "";
+        String footerURL = "";
+        String msgcolor = "FFFFFF"; // Default to white if not set
 
         for (String line : msg) {
             if (line.startsWith("<title>")) {
                 title = line.split("<title>")[1];
-                isValid += 1;
             }
             if (line.startsWith("<desc>")) {
                 description = line.split("<desc>")[1];
-                isValid += 1;
+            }
+            if (line.startsWith("<thumbnail>")) {
+                thumbnail = line.split("<thumbnail>")[1];
             }
             if (line.startsWith("<ftitle>")) {
                 ftitle = line.split("<ftitle>")[1];
-
             }
             if (line.startsWith("<fvalue>")) {
                 fvalue = line.split("<fvalue>")[1];
-
             }
-
+            if (line.startsWith("<image>")) {
+                image = line.split("<image>")[1];
+            }
             if (line.startsWith("<url>")) {
                 url = line.split("<url>")[1];
+            }
+            if (line.startsWith("<footer>")) {
+
+                /*The .split(",", 2) method will split the input string into an array based on the comma separator.
+                *The number 2 indicates that you want to split the string into at most 2 parts.
+
+                *When you check footerParts.length > 0, you are essentially verifying the number of splits.
+                *If footerParts.length > 1, you verify that a second part exists (i.e., the string actually had a comma and text after it).
+
+                *footerParts[0] will contain the text before the comma (if any).
+                *footerParts[1] will contain the text after the comma (if any).*/
+
+               String footerInput = line.split("<footer>")[1];
+
+               String footerParts[] = footerInput.split(",",2);
+                if (footerParts.length > 0){
+                    footerTxt = footerParts[0].trim();
+                }
+                if (footerParts.length > 1){
+                    footerURL = footerParts[1].trim();
+                }
 
             }
             if (line.startsWith("<color>")) {
                 msgcolor = line.split("<color>")[1];
-
             }
         }
 
-        if (isValid == 2) {
-            if (fvalue != null && ftitle == null) {
-                return null;
-            } else {
-
-                EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                        .title(title)
-                        .description(description)
-                        .addField(ftitle, fvalue, false)
-                        .url(url)
-                        .color(Color.of(Integer.parseInt(msgcolor, 16)))
-                        .build();
-
-                return embed;
-
-            }
+        // Build your embed
+        if (!title.isEmpty() && !description.isEmpty()) {
+            EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                    .title(title)
+                    .description(description)
+                    .thumbnail(thumbnail)
+                    .addField(ftitle, fvalue, false)
+                    .url(url)
+                    .image(image)
+                    .footer(footerTxt, footerURL)
+                    .color(Color.of(Integer.parseInt(msgcolor, 16)))
+                    .build();
+            return embed;
         } else {
-            return null;
+            return null; // Return null or a default embed
         }
     }
+
 
     @Override
     public void execute() {
