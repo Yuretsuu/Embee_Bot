@@ -7,7 +7,7 @@ import discord4j.core.GatewayDiscordClient;
 public class Gateway {
     public static GatewayDiscordClient connect(){
         GatewayDiscordClient client = DiscordClientBuilder.create
-                        ("MTA5MjY3ODE2MzE3NzQyMjg0OA.GT_PO9.0pJLNIXAH97JPevIO-c0Cf8t55ee4brPKBuNd8")
+                        ("MTA5MjY3ODE2MzE3NzQyMjg0OA.G6M3T6.QQI2tE1zoyG7QcC3uWOdCbjnUMd9UDFMSrMGsk")
                 .build()
                 .login()
                 .block();
